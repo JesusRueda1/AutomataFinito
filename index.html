@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador de Autómatas Finitos</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="encabezado">
+    <h1>Simulador de Autómatas Finitos Deterministas</h1>
+    <p>Estructuras Discretas · M = (Q, Σ, δ, q0, F)</p>
+  </header>
+
+  <!-- Navegación: equivalente al menú principal -->
+  <nav class="pestanas" role="tablist">
+    <button type="button" class="pestana activa" data-modulo="modulo1">1. Construir el autómata y ver su gráfica</button>
+    <button type="button" class="pestana" data-modulo="modulo2">2. Mostrar cinco palabras reconocidas</button>
+    <button type="button" class="pestana" data-modulo="modulo3">3. Probar si una palabra es reconocida</button>
+  </nav>
+
+  <main>
+    <!-- Aviso que se muestra en los módulos 2 y 3 si no hay autómata -->
+    <div id="aviso-sin-automata" class="tarjeta aviso oculto">
+      <p>Todavía no hay un autómata construido. Primero debe pasar por el <strong>Módulo 1</strong>.</p>
+      <button type="button" id="btn-ir-modulo1" class="boton">Ir al Módulo 1</button>
+    </div>
+
+    <!-- ===================== MÓDULO 1 ===================== -->
+    <section id="modulo1" class="modulo">
+      <div class="barra-acciones">
+        <h2>Módulo 1 · Construcción y gráfica</h2>
+        <button type="button" id="btn-ejemplo-a2" class="boton secundario">Cargar ejemplo A2</button>
+      </div>
+
+      <!-- Paso 1: Q -->
+      <div class="tarjeta paso" id="paso1">
+        <h3><span class="num">1</span> Estados Q</h3>
+        <label for="inp-estados">Estados separados por comas</label>
+        <div class="fila">
+          <input type="text" id="inp-estados" placeholder="s0, s1, s2" autocomplete="off">
+          <button type="button" class="boton" id="btn-paso1">Siguiente</button>
+        </div>
+        <p class="mensaje" id="msg-estados"></p>
+      </div>
+
+      <!-- Paso 2: Σ -->
+      <div class="tarjeta paso bloqueado" id="paso2">
+        <h3><span class="num">2</span> Alfabeto Σ</h3>
+        <label for="inp-alfabeto">Símbolos separados por comas (cada uno de un solo carácter)</label>
+        <div class="fila">
+          <input type="text" id="inp-alfabeto" placeholder="a, b" autocomplete="off" disabled>
+          <button type="button" class="boton" id="btn-paso2" disabled>Siguiente</button>
+        </div>
+        <p class="mensaje" id="msg-alfabeto"></p>
+      </div>
+
+      <!-- Paso 3: δ -->
+      <div class="tarjeta paso bloqueado" id="paso3">
+        <h3><span class="num">3</span> Función de transición δ</h3>
+        <p class="ayuda">Escriba en cada casilla el estado al que se pasa.</p>
+        <div id="contenedor-delta" class="tabla-scroll"></div>
+        <div class="fila">
+          <button type="button" class="boton" id="btn-paso3" disabled>Siguiente</button>
+        </div>
+        <p class="mensaje" id="msg-delta"></p>
+      </div>
+
+      <!-- Paso 4: q0 -->
+      <div class="tarjeta paso bloqueado" id="paso4">
+        <h3><span class="num">4</span> Estado inicial q0</h3>
+        <label for="inp-inicial">Debe pertenecer a Q</label>
+        <div class="fila">
+          <input type="text" id="inp-inicial" placeholder="s0" autocomplete="off" disabled>
+          <button type="button" class="boton" id="btn-paso4" disabled>Siguiente</button>
+        </div>
+        <p class="mensaje" id="msg-inicial"></p>
+      </div>
+
+      <!-- Paso 5: F -->
+      <div class="tarjeta paso bloqueado" id="paso5">
+        <h3><span class="num">5</span> Estados finales F</h3>
+        <label for="inp-finales">Uno o varios estados de Q, separados por comas</label>
+        <div class="fila">
+          <input type="text" id="inp-finales" placeholder="s2" autocomplete="off" disabled>
+          <button type="button" class="boton principal" id="btn-construir" disabled>Construir autómata</button>
+        </div>
+        <p class="mensaje" id="msg-finales"></p>
+      </div>
+
+      <!-- Resultado -->
+      <div class="tarjeta oculto" id="resultado-modulo1">
+        <h3>Autómata construido</h3>
+        <p class="tupla" id="texto-tupla"></p>
+        <h4>Tabla de transiciones</h4>
+        <div id="tabla-transiciones" class="tabla-scroll"></div>
+        <p class="ayuda">→ estado inicial · * estado final</p>
+        <h4>Gráfica</h4>
+        <div id="grafica" class="grafica"></div>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 2 ===================== -->
+    <section id="modulo2" class="modulo oculto">
+      <h2>Módulo 2 · Cinco palabras reconocidas</h2>
+      <div class="tarjeta contenido-modulo">
+        <p class="tupla" id="tupla-modulo2"></p>
+        <p class="ayuda">Palabras reconocidas más cortas en orden canónico (por longitud y luego por el orden de Σ), buscando hasta longitud 10.</p>
+        <ol id="lista-palabras" class="lista-palabras"></ol>
+        <p class="mensaje" id="msg-modulo2"></p>
+      </div>
+    </section>
+
+    <!-- ===================== MÓDULO 3 ===================== -->
+    <section id="modulo3" class="modulo oculto">
+      <h2>Módulo 3 · Probar palabras</h2>
+      <div class="tarjeta contenido-modulo">
+        <p class="tupla" id="tupla-modulo3"></p>
+        <label for="inp-palabra">Escriba una palabra (vacío = palabra vacía ε)</label>
+        <div class="fila">
+          <input type="text" id="inp-palabra" autocomplete="off">
+          <button type="button" class="boton principal" id="btn-probar">Probar</button>
+        </div>
+        <div id="resultado-prueba" class="resultado-prueba oculto"></div>
+      </div>
+      <div class="tarjeta contenido-modulo">
+        <div class="barra-acciones">
+          <h3>Historial</h3>
+          <button type="button" class="boton secundario" id="btn-limpiar-historial">Limpiar historial</button>
+        </div>
+        <table class="tabla" id="tabla-historial">
+          <thead><tr><th>#</th><th>Palabra</th><th>Recorrido</th><th>Resultado</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="ayuda" id="historial-vacio">Aún no se ha probado ninguna palabra.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts clásicos en orden (no módulos ES, para que funcione con file://) -->
+  <script src="lib/jquery-3.7.1.min.js"></script>
+  <script src="lib/viz-standalone.js"></script>
+  <script src="js/automata.js"></script>
+  <script src="js/grafica.js"></script>
+  <script src="js/modulo1.js"></script>
+  <script src="js/modulo2.js"></script>
+  <script src="js/modulo3.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

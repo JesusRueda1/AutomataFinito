@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pruebas del simulador</title>
+  <style>
+    body { font-family: "Segoe UI", Helvetica, Arial, sans-serif; margin: 24px; color: #1f2933; background: #f4f6f9; }
+    h1 { margin-top: 0; }
+    #resumen { font-size: 1.2rem; font-weight: 700; padding: 10px 14px; border-radius: 6px; display: inline-block; }
+    .todo-bien { background: #e3f5e8; color: #1e7b34; }
+    .hay-fallas { background: #fdecea; color: #b42318; }
+    table { border-collapse: collapse; margin-top: 16px; background: #fff; width: 100%; }
+    th, td { border: 1px solid #d9e2ec; padding: 6px 10px; text-align: left; vertical-align: top; font-size: .92rem; }
+    th { background: #f0f4f8; }
+    tr.pasa td.estado { background: #e3f5e8; color: #1e7b34; font-weight: 700; }
+    tr.falla td.estado { background: #fdecea; color: #b42318; font-weight: 700; }
+    tr.falla { background: #fff7f6; }
+    code { font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <h1>Pruebas del Simulador de AFD</h1>
+  <p>Ejecuta los casos A1–A4 del enunciado con las mismas funciones del programa (<code>js/automata.js</code> y <code>js/grafica.js</code>).</p>
+  <div id="resumen">Ejecutando…</div>
+  <table>
+    <thead><tr><th>Estado</th><th>Caso</th><th>Esperado</th><th>Obtenido</th></tr></thead>
+    <tbody id="resultados"></tbody>
+  </table>
+
+  <script src="lib/viz-standalone.js"></script>
+  <script src="js/automata.js"></script>
+  <script src="js/grafica.js"></script>
+  <script>
+    /* --------------------------- Mini marco de pruebas --------------------------- */
+    let pasan = 0, fallan = 0;
+
+    /** Agrega una fila verde (pasa) o roja (falla). */
+    function registrar(nombre, esperado, obtenido, ok) {
+      ok ? pasan++ : fallan++;
+      const tr = document.createElement('tr');
+      tr.className = ok ? 'pasa' : 'falla';
+      [ok ? 'PASA' : 'FALLA', nombre, esperado, obtenido].forEach(function (t, i) {
+        const td = document.createElement('td');
+        if (i === 0) td.className = 'estado';
+        td.textContent = t;
+        tr.appendChild(td);
+      });
+      document.getElementById('resultados').appendChild(tr);
+      actualizarResumen();
+    }
+
+    function igual(nombre, esperado, obtenido) {
+      const e = JSON.stringify(esperado), o = JSON.stringify(obtenido);
+      registrar(nombre, e, o, e === o);
+    }
+
+    function verdadero(nombre, condicion, detalle) {
+      registrar(nombre, 'verdadero', (condicion ? 'verdadero' : 'falso') + (detalle ? ' — ' + detalle : ''), !!condicion);
+    }
+
+    function actualizarResumen() {
+      const r = document.getElementById('resumen');
+      r.textContent = pasan + ' de ' + (pasan + fallan) + ' pruebas pasan';
+      r.className = fallan === 0 ? 'todo-bien' : 'hay-fallas';
+    }
+
+    /** Ejecuta una prueba atrapando errores para que una falla no detenga las demás. */
+    function caso(nombre, fn) {
+      try { fn(); } catch (e) { registrar(nombre, 'sin errores', 'Excepción: ' + e.message, false); }
+    }
+
+    /* ------------------------------ Autómatas ------------------------------ */
+    const A1 = new AFD(['q0', 'q1'], ['0', '1'],
+      { q0: { '0': 'q1', '1': 'q0' }, q1: { '0': 'q0', '1': 'q1' } }, 'q0', ['q0']);
+
+    const A2 = new AFD(['s0', 's1', 's2'], ['a', 'b'], EJEMPLO_A2.delta, 's0', ['s2']);
+
+    const A3 = new AFD(['p0', 'p1', 'p2', 'p3', 'm'], ['a', 'b'], {
+      p0: { a: 'p1', b: 'p2' },
+      p1: { a: 'm', b: 'p3' },
+      p2: { a: 'p3', b: 'm' },
+      p3: { a: 'm', b: 'm' },
+      m: { a: 'm', b: 'm' }
+    }, 'p0', ['p3']);
+
+    const A4 = new AFD(['q0', 'q1'], ['a'], { q0: { a: 'q0' }, q1: { a: 'q1' } }, 'q0', ['q1']);
+
+    const palabras = function (afd) {
+      return afd.palabrasReconocidas(5, 10).palabras.map(function (p) { return mostrarPalabra(p.palabra); });
+    };
+
+    /* ------------------------------ Módulo 2 ------------------------------ */
+    caso('M2 · A1 (número par de ceros)', function () {
+      igual('M2 · A1 (número par de ceros)', ['ε', '1', '00', '11', '001'], palabras(A1));
+    });
+    caso('M2 · A2 (terminan en ab)', function () {
+      igual('M2 · A2 (terminan en ab)', ['ab', 'aab', 'bab', 'aaab', 'abab'], palabras(A2));
+    });
+    caso('M2 · A3 (solo ab y ba)', function () {
+      const r = A3.palabrasReconocidas(5, 10);
+      igual('M2 · A3 palabras', ['ab', 'ba'], r.palabras.map(function (p) { return p.palabra; }));
+      igual('M2 · A3 mensaje', 'Este autómata solo reconoce 2 palabras de longitud menor o igual que 10.', r.mensaje);
+    });
+    caso('M2 · A4 (ninguna)', function () {
+      const r = A4.palabrasReconocidas(5, 10);
+      igual('M2 · A4 sin palabras', [], r.palabras);
+      igual('M2 · A4 final no alcanzable', false, r.finalAlcanzable);
+      verdadero('M2 · A4 mensaje explica que el final no es alcanzable',
+        /ningún estado final .* es alcanzable/.test(r.mensaje), r.mensaje);
+    });
+    caso('M2 · recorrido junto a cada palabra (A2)', function () {
+      igual('M2 · recorrido de "ab" en A2', 's0 –a→ s1 –b→ s2', A2.palabrasReconocidas(5, 10).palabras[0].texto);
+    });
+
+    /* ------------------------------ Módulo 3 ------------------------------ */
+    function prueba3(afd, nombreAfd, palabra, esperado) {
+      caso('M3 · ' + nombreAfd + ' ' + mostrarPalabra(palabra), function () {
+        igual('M3 · ' + nombreAfd + ': ' + mostrarPalabra(palabra) + (esperado ? ' reconocida' : ' NO reconocida'),
+          esperado, afd.recorrer(palabra).aceptada);
+      });
+    }
+    prueba3(A2, 'A2', 'abab', true);
+    prueba3(A2, 'A2', 'aba', false);
+    prueba3(A2, 'A2', 'bab', true);
+    prueba3(A2, 'A2', 'bb', false);
+    prueba3(A2, 'A2', '', false);
+    caso('M3 · A2 abc', function () {
+      const r = A2.recorrer('abc');
+      igual('M3 · A2: abc NO reconocida', false, r.aceptada);
+      igual('M3 · A2: abc símbolo y posición', { simbolo: 'c', posicion: 3 }, { simbolo: r.error.simbolo, posicion: r.error.posicion });
+      igual('M3 · A2: abc mensaje',
+        'el símbolo "c" (posición 3) no pertenece al alfabeto Σ = {a, b}.', r.error.mensaje);
+    });
+    caso('M3 · A2 ε se queda en s0', function () {
+      const r = A2.recorrer('');
+      igual('M3 · A2: ε termina en s0 (no final)', ['s0', false], [r.estadoFinal, r.esFinal]);
+    });
+    prueba3(A1, 'A1', '0110', true);
+    caso('M3 · A1 0110 recorrido', function () {
+      igual('M3 · A1: recorrido de 0110', ['q0', 'q1', 'q1', 'q1', 'q0'], A1.recorrer('0110').camino);
+    });
+    prueba3(A1, 'A1', '1011', false);
+    prueba3(A1, 'A1', '', true);
+
+    /* ------------------------------ Validaciones ------------------------------ */
+    caso('Validaciones', function () {
+      igual('Q válido', ['s0', 's1', 's2'], validarEstados(' s0, s1 ,s2 ').valor);
+      verdadero('Q vacío es error', !validarEstados('  ').ok);
+      verdadero('Q con repetidos es error', !validarEstados('s0, s1, s0').ok);
+      verdadero('Σ con símbolo de 2 caracteres es error', !validarAlfabeto('a, bc').ok);
+      verdadero('Σ con repetidos es error', !validarAlfabeto('a, b, a').ok);
+      igual('δ con estado fuera de Q',
+        'El estado s5 no pertenece a Q = {s0, s1, s2}. Intente de nuevo.',
+        validarDestino('s5', ['s0', 's1', 's2']).error);
+      verdadero('q0 fuera de Q es error', !validarInicial('x', ['s0']).ok);
+      const f = validarFinales('', ['s0']);
+      verdadero('F vacío es válido con advertencia', f.ok && !!f.advertencia, f.advertencia);
+      verdadero('F con estado fuera de Q es error', !validarFinales('s9', ['s0']).ok);
+    });
+    caso('Tupla', function () {
+      igual('5-tupla de A2', 'M = ({s0, s1, s2}, {a, b}, δ, s0, {s2})', A2.tupla());
+    });
+
+    /* ------------------------------ Gráfica (DOT) ------------------------------ */
+    caso('DOT', function () {
+      const dot2 = generarDOT(A2);
+      verdadero('DOT: rankdir=LR', dot2.indexOf('rankdir=LR') !== -1);
+      verdadero('DOT: nodo invisible apunta a q0', dot2.indexOf('__inicio__ -> "s0"') !== -1);
+      verdadero('DOT: s2 con doublecircle', dot2.indexOf('"s2" [shape=doublecircle]') !== -1);
+      verdadero('DOT: s0 con circle', dot2.indexOf('"s0" [shape=circle]') !== -1);
+      verdadero('DOT: bucle s0 -> s0', dot2.indexOf('"s0" -> "s0" [label="b"]') !== -1);
+      verdadero('DOT: ambos sentidos s1 -> s2 y s2 -> s1',
+        dot2.indexOf('"s1" -> "s2" [label="b"]') !== -1 && dot2.indexOf('"s2" -> "s1" [label="a"]') !== -1);
+      verdadero('DOT: etiqueta agrupada "a, b" (A3, m -> m)',
+        generarDOT(A3).indexOf('"m" -> "m" [label="a, b"]') !== -1);
+    });
+
+    /* ------------------------------ Viz.js (asíncrona) ------------------------------ */
+    if (typeof Viz === 'undefined') {
+      registrar('Viz.js cargado desde lib/', 'Viz definido', 'Viz no está definido', false);
+    } else {
+      Viz.instance().then(function (viz) {
+        const svg = viz.renderSVGElement(generarDOT(A2));
+        verdadero('Viz.js dibuja A2 como SVG', svg && svg.tagName.toLowerCase() === 'svg');
+      }).catch(function (e) {
+        registrar('Viz.js dibuja A2 como SVG', 'SVG', 'Error: ' + e.message, false);
+      }).then(function () { document.body.setAttribute('data-terminado', 'si'); });
+    }
+  </script>
+</body>
+</html>
