@@ -97,8 +97,6 @@ Se utilizó **Claude Code** (asistente de programación de Anthropic) para:
 - escribir comentarios del codigo fuente en español;
 - redactar este README.
 
-Se reviso el codigo, y ejecutó las pruebas, es capaz de explicar y modificar cada parte del programa.
-
 ## Capturas
 
 Todas las capturas usan el autómata **A2** (palabras sobre {a, b} que terminan en `ab`).
