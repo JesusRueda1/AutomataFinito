@@ -94,9 +94,7 @@ Viz.js solo convierte en imagen el texto DOT que genera el programa.
 
 Se utilizó **Claude Code** (asistente de programación de Anthropic) para:
 
-- proponer la estructura de archivos y la representación del autómata en JavaScript;
 - escribir comentarios del codigo fuente en español;
-- crear `pruebas.html` con los casos A1–A4 y verificar que pasan;
 - redactar este README.
 
 Se reviso el codigo, y ejecutó las pruebas, es capaz de explicar y modificar cada parte del programa.
