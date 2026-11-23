@@ -1,10 +1,4 @@
-/**
- * modulo2.js
- * -----------------------------------------------------------------------------
- * Módulo 2: muestra las 5 palabras reconocidas más cortas en orden canónico,
- * cada una con su recorrido. La búsqueda está en AFD.palabrasReconocidas().
- * -----------------------------------------------------------------------------
- */
+//  Módulo 2: muestra las 5 palabras reconocidas más cortas en orden canónico, cada una con su recorrido. La búsqueda está en AFD.palabrasReconocidas().
 
 const Modulo2 = (function () {
 

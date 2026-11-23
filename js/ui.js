@@ -1,25 +1,15 @@
-/**
- * ui.js
- * -----------------------------------------------------------------------------
- * Navegación entre módulos (equivalente al menú principal) y estado global.
- * Se carga al final, cuando ya existen Modulo1, Modulo2 y Modulo3.
- * -----------------------------------------------------------------------------
- */
+// Navegación entre módulos (equivalente al menú principal) y estado global. Se carga al final, cuando ya existen Modulo1, Modulo2 y Modulo3.
 
-/**
- * Estado global del simulador: guarda el autómata actual.
- * Construir otro autómata en el Módulo 1 reemplaza al anterior.
- */
+// Estado global del simulador: guarda el autómata actual. El construir otro autómata en el Módulo 1 reemplaza al anterior.
 const Simulador = {
   /** @type {AFD|null} */
   automata: null,
 
-  /** Módulo que se está viendo ('modulo1', 'modulo2' o 'modulo3'). */
+  // Modulo actual
   moduloActual: 'modulo1',
 
   /**
-   * Reemplaza el autómata actual. El historial del Módulo 3 pertenece
-   * al autómata anterior, así que se limpia.
+   * Reemplaza el autómata actual. El historial del Módulo 3 pertenece al autómata anterior, así que se limpia.
    * @param {AFD} afd
    */
   establecerAutomata: function (afd) {
@@ -28,8 +18,7 @@ const Simulador = {
   },
 
   /**
-   * Muestra un módulo. Los módulos 2 y 3 necesitan un autómata construido;
-   * si no lo hay, se muestra un aviso con un botón para ir al Módulo 1.
+   * Muestra un módulo. Los módulos 2 y 3 necesitan un autómata construido; si no lo hay, se muestra un aviso con un botón para ir al Módulo 1.
    * @param {string} modulo
    */
   irA: function (modulo) {

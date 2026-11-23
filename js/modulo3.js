@@ -1,11 +1,4 @@
-/**
- * modulo3.js
- * -----------------------------------------------------------------------------
- * Módulo 3: probar si una palabra es reconocida. Muestra el recorrido, el
- * estado en que termina, si es final y el resultado (verde/rojo). Lleva un
- * historial de las palabras probadas. El recorrido está en AFD.recorrer().
- * -----------------------------------------------------------------------------
- */
+//  Módulo 3: probar si una palabra es reconocida. Muestra el recorrido, el estado en que termina, si es final y el resultado (verde/rojo). Lleva un  historial de las palabras probadas. El recorrido está en AFD.recorrer().
 
 const Modulo3 = (function () {
 
@@ -20,16 +13,17 @@ const Modulo3 = (function () {
     $('#inp-palabra').trigger('focus');
   }
 
-  /** Prueba la palabra escrita en el campo con el autómata actual. */
+  // Prueba la palabra escrita en el campo con el autómata actual.
   function probar() {
     const afd = Simulador.automata;
-    if (!afd) return; // ui.js ya muestra el aviso de ir al Módulo 1
+    // ui.js ya muestra el aviso de ir al Módulo 1
+    if (!afd) return;
 
     const palabra = $('#inp-palabra').val();
     const r = afd.recorrer(palabra);
     const camino = afd.formatearCamino(r);
 
-    // ----- Resultado detallado -----
+    // Resultado detallado
     const $res = $('#resultado-prueba').empty().removeClass('oculto');
     $res.append($('<p>').append('<strong>Palabra:</strong> ').append(document.createTextNode(mostrarPalabra(palabra))));
     $res.append($('<p>').append('<strong>Recorrido:</strong> ').append($('<span class="camino">').text(camino)));
@@ -77,7 +71,7 @@ const Modulo3 = (function () {
     actualizarHistorialVacio();
   }
 
-  /** Borra el historial y el último resultado. */
+  // Borra el historial y el último resultado.
   function limpiarHistorial() {
     contador = 0;
     $('#tabla-historial tbody').empty();
@@ -85,14 +79,14 @@ const Modulo3 = (function () {
     actualizarHistorialVacio();
   }
 
-  /** Muestra u oculta el texto "Aún no se ha probado ninguna palabra". */
+  // Muestra u oculta el texto "Aún no se ha probado ninguna palabra".
   function actualizarHistorialVacio() {
     const vacio = $('#tabla-historial tbody tr').length === 0;
     $('#historial-vacio').toggleClass('oculto', !vacio);
     $('#tabla-historial').toggleClass('oculto', vacio);
   }
 
-  /** Conecta los eventos del Módulo 3. */
+  // Conecta los eventos del Módulo 3.
   function iniciar() {
     $('#btn-probar').on('click', probar);
     $('#inp-palabra').on('keydown', function (e) {

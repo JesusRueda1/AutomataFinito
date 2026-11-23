@@ -1,9 +1,5 @@
 /**
- * automata.js
- * -----------------------------------------------------------------------------
  * Lógica pura del Autómata Finito Determinista (AFD).
- * NO usa jQuery ni toca la página: solo datos y algoritmos. Así se puede
- * probar por separado (pruebas.html) y explicar sin mezclarlo con la interfaz.
  *
  * Un AFD es una 5-tupla M = (Q, Σ, δ, q0, F):
  *   Q  -> conjunto finito de estados
@@ -11,7 +7,6 @@
  *   δ  -> función de transición δ: Q × Σ → Q
  *   q0 -> estado inicial (q0 ∈ Q)
  *   F  -> conjunto de estados finales (F ⊆ Q)
- * -----------------------------------------------------------------------------
  */
 
 /** Longitud máxima de palabra que se explora en el Módulo 2. */

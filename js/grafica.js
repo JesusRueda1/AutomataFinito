@@ -1,14 +1,8 @@
 /**
- * grafica.js
- * -----------------------------------------------------------------------------
  * Dibuja el autómata con Graphviz.
- *  1) generarDOT(afd): arma el texto en lenguaje DOT (el formato de Graphviz)
- *     a partir de los datos del autómata.
- *  2) renderizarGrafica(dot, contenedor): usa Viz.js (Graphviz compilado para
- *     el navegador, archivo lib/viz-standalone.js) para convertir el DOT en
- *     una imagen SVG dentro de la página.
+ *  1) generarDOT(afd): arma el texto en lenguaje DOT a partir de los datos del autómata.
+ *  2) renderizarGrafica(dot, contenedor): usa Viz.js para convertir el DOT en una imagen SVG dentro de la página.
  * Si Viz.js no está disponible, se muestra un aviso y el texto DOT.
- * -----------------------------------------------------------------------------
  */
 
 /**
@@ -22,7 +16,7 @@ function citarDOT(texto) {
 }
 
 /**
- * Genera el código DOT del autómata cumpliendo las reglas del enunciado:
+ * Genera el código DOT del autómata cumpliendo las reglas:
  *  1. Flecha de entrada a q0 desde un nodo invisible (no sale de ningún estado).
  *  2. Finales con doble círculo (doublecircle); los demás con círculo (circle).
  *  3. δ(q, a) = q se dibuja como bucle (Graphviz lo hace solo con q -> q).
@@ -71,12 +65,12 @@ function generarDOT(afd) {
   return lineas.join('\n');
 }
 
-/** Instancia de Viz.js (se crea una sola vez porque cargar Graphviz tarda un poco). */
+/** Instancia de Viz.js. */
 let promesaViz = null;
 
 /**
  * Dibuja el texto DOT dentro de un elemento HTML.
- * Si Viz.js no cargó o falla, muestra un aviso y el código DOT (la página no se rompe).
+ * Si Viz.js no cargó o falla, muestra un aviso y el código DOT.
  * @param {string} dot Texto DOT.
  * @param {HTMLElement} contenedor Elemento donde se coloca la gráfica.
  * @returns {Promise<void>}

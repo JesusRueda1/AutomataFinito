@@ -1,17 +1,14 @@
 /**
- * modulo1.js
- * -----------------------------------------------------------------------------
- * Módulo 1: construcción del autómata paso a paso (tipo asistente) y gráfica.
+ * Módulo 1: construcción del autómata paso a paso y gráfica.
  * Pasos: 1) Q  2) Σ  3) δ  4) q0  5) F  -> botón "Construir autómata".
  * Cada paso se habilita solo cuando el anterior es válido. Si el usuario
  * modifica un paso ya validado, los pasos siguientes se vuelven a bloquear.
  * Usa jQuery para la página; la validación y el AFD vienen de automata.js.
- * -----------------------------------------------------------------------------
  */
 
 const Modulo1 = (function () {
 
-  /** Datos ya validados de cada paso (null = todavía no validado). */
+  /** Datos ya validados de cada paso. */
   const datos = {
     estados: null,   // string[]
     alfabeto: null,  // string[]
@@ -19,10 +16,7 @@ const Modulo1 = (function () {
     inicial: null    // string
   };
 
-  /* ------------------------------------------------------------------ */
-  /* Utilidades de la interfaz                                           */
-  /* ------------------------------------------------------------------ */
-
+  // Interfaz
   /**
    * Muestra un mensaje bajo un campo.
    * @param {jQuery} $msg Párrafo del mensaje.
@@ -64,9 +58,7 @@ const Modulo1 = (function () {
     $('#paso' + n).addClass('valido');
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Paso 1: Q                                                           */
-  /* ------------------------------------------------------------------ */
+  // Paso 1
 
   /** Valida Q y, si es correcto, habilita el paso 2. @returns {boolean} */
   function validarPaso1() {
@@ -84,9 +76,7 @@ const Modulo1 = (function () {
     return true;
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Paso 2: Σ  (y generación de la tabla de δ)                          */
-  /* ------------------------------------------------------------------ */
+  // Paso 2: Σ(alfabeto)  (y generación de la tabla de δ(función de transición))
 
   /** Valida Σ, genera la tabla de δ y habilita el paso 3. @returns {boolean} */
   function validarPaso2() {
@@ -196,9 +186,7 @@ const Modulo1 = (function () {
     return true;
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Paso 4: q0                                                          */
-  /* ------------------------------------------------------------------ */
+  // Paso 4: q0
 
   /** Valida q0 y habilita el paso 5. @returns {boolean} */
   function validarPaso4() {
@@ -216,9 +204,7 @@ const Modulo1 = (function () {
     return true;
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Paso 5: F y construcción                                            */
-  /* ------------------------------------------------------------------ */
+  // Paso 5: F y construcción
 
   /** Valida F, construye el AFD y muestra tupla, tabla y gráfica. */
   function construir() {
@@ -243,8 +229,7 @@ const Modulo1 = (function () {
   }
 
   /**
-   * Crea la tabla de transiciones (fila por estado, columna por símbolo,
-   * → en el inicial y * en los finales).
+   * Crea la tabla de transiciones (fila por estado, columna por símbolo, → en el inicial y * en los finales).
    * @param {AFD} afd
    * @returns {jQuery}
    */
@@ -277,9 +262,7 @@ const Modulo1 = (function () {
     document.getElementById('resultado-modulo1').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Ejemplo A2                                                          */
-  /* ------------------------------------------------------------------ */
+  // Ejemplo A2
 
   /**
    * Rellena los campos con el autómata A2 pasando por las mismas
@@ -303,9 +286,7 @@ const Modulo1 = (function () {
     $('#btn-construir').trigger('focus');
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Eventos                                                             */
-  /* ------------------------------------------------------------------ */
+  // Eventos
 
   /**
    * Hace que Enter en un campo presione el botón indicado.
@@ -318,7 +299,7 @@ const Modulo1 = (function () {
     });
   }
 
-  /** Conecta todos los eventos del Módulo 1. Se llama una vez al cargar. */
+  // Inicio
   function iniciar() {
     bloquearDesde(2);
 
